@@ -24,30 +24,28 @@ const getCustomers = async (req, res) => {
 
 module.exports = { addCustomer, getCustomers };
 
-
-// UPDATE a customer
+// PUT - Update customer
 const updateCustomer = async (req, res) => {
-  try {
-    const customer = await Customer.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    res.json(customer);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  const customer = await Customer.findById(req.params.id);
+  if (!customer) return res.status(404).json({ message: 'Customer not found' });
+
+  customer.name = req.body.name || customer.name;
+  customer.phone = req.body.phone || customer.phone;
+  customer.address = req.body.address || customer.address;
+
+  const updated = await customer.save();
+  res.json(updated);
 };
 
-// DELETE a customer
+// DELETE - Remove customer
 const deleteCustomer = async (req, res) => {
-  try {
-    const customer = await Customer.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Customer removed' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  const customer = await Customer.findById(req.params.id);
+  if (!customer) return res.status(404).json({ message: 'Customer not found' });
+
+  await customer.remove();
+  res.json({ message: 'Customer deleted' });
 };
+
 
 module.exports = {
   addCustomer,
