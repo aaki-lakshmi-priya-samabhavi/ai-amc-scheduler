@@ -1,8 +1,5 @@
-const express = require('express');
-const router = express.Router();
-//this is code
+const router = require('express').Router();  // ✅ This line is required
 
-// ✅ Import all controller functions once
 const {
   addCustomer,
   getCustomers,

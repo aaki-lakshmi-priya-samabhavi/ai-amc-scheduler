@@ -22,35 +22,42 @@ const getCustomers = async (req, res) => {
   }
 };
 
-module.exports = { addCustomer, getCustomers };
-
-// PUT - Update customer
+// PUT: Update customer
 const updateCustomer = async (req, res) => {
-  const customer = await Customer.findById(req.params.id);
-  if (!customer) return res.status(404).json({ message: 'Customer not found' });
+  try {
+    const { id } = req.params;
+    const { name, contact, amcStartDate, amcEndDate } = req.body;
 
-  customer.name = req.body.name || customer.name;
-  customer.phone = req.body.phone || customer.phone;
-  customer.address = req.body.address || customer.address;
+    const updatedCustomer = await Customer.findByIdAndUpdate(
+      id,
+      { name, contact, amcStartDate, amcEndDate },
+      { new: true }
+    );
 
-  const updated = await customer.save();
-  res.json(updated);
+    if (!updatedCustomer) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+
+    res.json(updatedCustomer);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-// DELETE - Remove customer
+// DELETE: Remove customer
 const deleteCustomer = async (req, res) => {
-  const customer = await Customer.findById(req.params.id);
-  if (!customer) return res.status(404).json({ message: 'Customer not found' });
-
-  await customer.remove();
-  res.json({ message: 'Customer deleted' });
+  try {
+    await Customer.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Customer deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting customer" });
+  }
 };
 
-
+// ✅ Export all functions in one place
 module.exports = {
   addCustomer,
   getCustomers,
   updateCustomer,
   deleteCustomer
 };
-
