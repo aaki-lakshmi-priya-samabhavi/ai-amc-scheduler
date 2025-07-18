@@ -18,3 +18,17 @@ router.route('/:id')
 
 // ✅ Export the router once
 module.exports = router;
+
+// Update a customer
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedCustomer = await Customer.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true } // return updated doc
+    );
+    res.status(200).json(updatedCustomer);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating customer', error });
+  }
+});
